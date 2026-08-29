@@ -1,39 +1,38 @@
-# IG 三聯 Business Suite 工具
+# Slice · 社群切片工具
 
-Mobile-first, framework-free PWA for producing Instagram triptych images entirely in the browser.
+Mobile-first、framework-free 的本機圖片切片 PWA，部署於 GitHub Pages。
 
-## Current behavior
+正式網址保持不變：`https://independentwu.github.io/ig-triptych-pwa/`
 
-- Any supported image → 3240×1440 content master.
-- 36px mirrored bleed on both outside edges → 3312×1440 internal master.
-- Three 1152×1440 JPEG files.
-- Business Suite publishing order: `03_RIGHT → 02_MIDDLE → 01_LEFT`.
-- iPhone / Android photo picker and system share where supported.
-- HEIC/HEIF conversion is loaded only when required.
-- User images are processed locally and are not uploaded by this app.
+## 功能
 
-## Architecture
+- 經典 IG 三聯：保留 3240×1440 主圖、左右各 36px bleed、3 張 1152×1440 的既有契約
+- 九宮格：3×3 / 9 張 1080×1080
+- 四宮格：2×2 / 4 張 1080×1080
+- 六宮格：3×2 / 6 張 1080×1080
+- 4:5 無縫輪播：3 張 1080×1350
+- 高清輸出：原尺寸 / 2× / 3× 高品質重採樣
+- HEIC/HEIF 本機轉換
+- Web Share / 單張儲存
+- PWA 離線核心資源快取
 
-Production code is plain HTML, CSS and ES modules. There is no framework, bundler or production build step. See [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+所有圖片處理都在瀏覽器本機執行，不會上傳到伺服器。
 
-## Quality checks
+## 架構
 
-Requires Node.js 20+ only for development tests:
+- `js/layouts.js`：輸出玩法與切片規格
+- `js/geometry.js`：純幾何運算與既有三聯契約
+- `js/canvas.js`：母版、預覽、切片 Canvas
+- `js/upscaler.js`：2× / 3× 分段高品質重採樣
+- `js/exporter.js`：序列化生成、縮略圖、Blob/File、分享
+- `js/ui.js`：純 UI 綁定與結果渲染
+- `js/app.js`：狀態與流程協調
+
+## 開發檢查
 
 ```bash
+npm run check
 npm test
 ```
 
-The production site itself does not require Node.js or npm.
-
-## GitHub Pages
-
-Stable production URL:
-
-`https://independentwu.github.io/ig-triptych-pwa/`
-
-Keep the repository name `ig-triptych-pwa` and Pages deployment at the repository root to preserve that URL.
-
-## Development rule
-
-Prefer complete module-level changes over inline patches. Geometry changes must update tests, and product invariants should not change accidentally.
+生產站仍然是純靜態 HTML/CSS/ES modules，不需要 Node、bundler 或 build step。

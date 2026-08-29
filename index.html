@@ -3,51 +3,81 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#ffffff">
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="IG三聯">
-  <meta name="description" content="在裝置本機把照片整理成 IG 三聯貼文，不上傳圖片。">
+  <meta name="apple-mobile-web-app-title" content="Slice">
+  <meta name="description" content="在裝置本機完成 IG 三聯、九宮格、輪播切片與高清放大。">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./assets/styles.css">
-  <title>IG 三聯工具</title>
+  <title>Slice · 社群切片工具</title>
 </head>
 <body>
+  <div class="spectrum" aria-hidden="true"></div>
   <main class="app" id="app">
-    <header class="top">
-      <div><h1>IG 三聯工具</h1><p>任意照片 → 3240×1440 → Business Suite 三張 1152×1440</p></div>
-      <span class="badge">本機處理</span>
-    </header>
-    <section class="card" aria-labelledby="source-title">
-      <h2 id="source-title" class="sr-only">選擇圖片</h2>
-      <label class="pick"><span class="btn" aria-hidden="true">從相簿選擇照片</span><input id="file" type="file" accept="image/*,.heic,.heif" aria-label="從相簿選擇照片"></label>
-      <p id="status" class="status" role="status" aria-live="polite">圖片只在你的裝置上處理，不會上傳。</p>
-      <button id="installBtn" class="btn secondary install" type="button">加入主畫面</button>
-    </section>
-    <section class="card" aria-labelledby="editor-title">
-      <h2 id="editor-title" class="sr-only">圖片編輯</h2>
-      <div id="preview" class="preview"><div class="empty">選擇照片後自動產生預覽</div></div>
-      <div class="controls">
-        <div class="field"><label for="mode"><span>適配方式</span><output id="modeText">完整保留</output></label><select id="mode"><option value="edge" selected>推薦：完整保留 + 模糊背景補齊</option><option value="cover">鋪滿畫面（可能裁切）</option></select></div>
-        <div class="field"><label for="x"><span>水平位置</span><output id="xv">0</output></label><input id="x" type="range" min="-100" max="100" value="0"></div>
-        <div class="field"><label for="y"><span>垂直位置</span><output id="yv">0</output></label><input id="y" type="range" min="-100" max="100" value="0"></div>
-        <div class="field"><label for="zoom"><span>主體縮放</span><output id="zv">100%</output></label><input id="zoom" type="range" min="70" max="150" value="100"></div>
-        <div class="field"><label for="blur"><span>背景模糊</span><output id="bv">18</output></label><input id="blur" type="range" min="0" max="36" value="18"></div>
+    <header class="hero">
+      <div class="hero-bar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>SLICE</span></div>
+        <button id="installBtn" class="text-button install" type="button">加入主畫面</button>
       </div>
-      <div class="actions one"><button id="generate" class="btn" type="button" disabled>產生三聯圖</button></div>
+      <h1>一張圖，<br>切成你想發的樣子。</h1>
+      <p>三聯、九宮格、輪播與高清放大。所有圖片只在這台裝置處理。</p>
+    </header>
+
+    <section class="source-section" aria-labelledby="source-title">
+      <h2 id="source-title" class="sr-only">選擇圖片</h2>
+      <label id="sourceButton" class="source-button">
+        <span class="source-copy"><strong>選擇照片</strong><span id="sourceName">JPG、PNG、HEIC</span></span>
+        <span class="source-plus" aria-hidden="true">＋</span>
+        <input id="file" type="file" accept="image/*,.heic,.heif" aria-label="從相簿選擇照片">
+      </label>
+      <p id="status" class="status" role="status" aria-live="polite">圖片不會離開你的裝置。</p>
     </section>
-    <section id="resultCard" class="card" aria-labelledby="result-title" hidden>
-      <div class="result-head"><b id="result-title">三張已產生</b><span>發布順序：右 → 中 → 左</span></div>
+
+    <section class="mode-section" aria-labelledby="mode-heading">
+      <div class="section-head"><span class="section-index">01</span><h2 id="mode-heading">選擇玩法</h2></div>
+      <div id="layoutRail" class="mode-rail" role="group" aria-label="輸出玩法"></div>
+      <div class="layout-copy"><strong id="layoutTitle">三聯</strong><p id="layoutDescription"></p><span id="publishHint"></span></div>
+    </section>
+
+    <section class="editor-section" aria-labelledby="editor-heading">
+      <div class="section-head"><span class="section-index">02</span><h2 id="editor-heading">調整畫面</h2><button id="reset" class="text-button section-action" type="button">重設</button></div>
+      <div id="preview" class="preview"><div class="empty"><span></span><p>選擇照片後，在這裡即時預覽切片。</p></div></div>
+
+      <div class="control-stack">
+        <div class="control-row select-row">
+          <label for="mode"><span>適配</span><output id="modeText">完整</output></label>
+          <select id="mode" aria-label="圖片適配方式"><option value="edge" selected>完整保留 · 模糊補齊</option><option value="cover">鋪滿 · 允許裁切</option></select>
+        </div>
+        <div class="control-row"><label for="x"><span>水平</span><output id="xv">0</output></label><input id="x" type="range" min="-100" max="100" value="0"></div>
+        <div class="control-row"><label for="y"><span>垂直</span><output id="yv">0</output></label><input id="y" type="range" min="-100" max="100" value="0"></div>
+        <div class="control-row"><label for="zoom"><span>縮放</span><output id="zv">100%</output></label><input id="zoom" type="range" min="70" max="150" value="100"></div>
+        <div class="control-row"><label for="blur"><span>背景模糊</span><output id="bv">18</output></label><input id="blur" type="range" min="0" max="36" value="18"></div>
+      </div>
+    </section>
+
+    <section class="quality-section" aria-labelledby="quality-heading">
+      <div class="section-head"><span class="section-index">03</span><h2 id="quality-heading">輸出品質</h2></div>
+      <div id="upscale" class="quality-switch" role="group" aria-label="高清放大倍率">
+        <button type="button" data-factor="1" aria-pressed="true"><strong>原尺寸</strong><span>最快</span></button>
+        <button type="button" data-factor="2" aria-pressed="false"><strong>高清 2×</strong><span>高品質重採樣</span></button>
+        <button type="button" data-factor="3" aria-pressed="false"><strong>高清 3×</strong><span>更大輸出</span></button>
+      </div>
+      <p class="microcopy">2× / 3× 會提高輸出像素與檔案大小，不會捏造「原圖不存在的真實細節」。</p>
+    </section>
+
+    <section id="resultCard" class="result-section" aria-labelledby="resultTitle" hidden>
+      <div class="result-head"><div><span class="section-index">04</span><h2 id="resultTitle">輸出完成</h2></div><p id="resultHint"></p></div>
       <div id="results" class="results"></div>
-      <div class="actions one"><button id="shareAll" class="btn" type="button">一次分享 / 儲存三張</button></div>
-      <div class="actions"><button id="saveLeft" class="btn secondary small" type="button">儲存左圖</button><button id="saveMid" class="btn secondary small" type="button">儲存中圖</button></div>
-      <div class="actions one"><button id="saveRight" class="btn secondary small" type="button">儲存右圖</button></div>
-      <p class="help">iPhone Safari：優先點「一次分享 / 儲存三張」，在系統分享面板選擇「儲存 3 張影像」。若系統不支援一次儲存，使用下面三個單張按鈕。</p>
+      <button id="shareAll" class="share-all" type="button">分享 / 儲存全部</button>
     </section>
-    <section class="card" aria-labelledby="spec-title"><div class="help"><b id="spec-title">固定機制</b><br>主圖：3240×1440<br>內部母版：3312×1440（左右各 36px bleed）<br>輸出：3 張 1152×1440<br>Business Suite 發布：03 右圖 → 02 中圖 → 01 左圖</div></section>
   </main>
+
+  <div class="action-dock" role="region" aria-label="生成操作">
+    <div class="action-inner"><div class="action-meta"><span>目前母版</span><strong id="generateMeta">3240 × 1440</strong></div><button id="generate" class="generate-button" type="button" disabled>生成 3 張</button></div>
+  </div>
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>

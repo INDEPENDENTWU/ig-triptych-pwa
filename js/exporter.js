@@ -1,0 +1,6 @@
+import { APP_CONFIG } from './config.js';
+import { sliceTriptych } from './canvas.js';
+export function canvasToBlob(canvas) { return new Promise((resolve, reject) => { canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('圖片輸出失敗。')), APP_CONFIG.export.mimeType, APP_CONFIG.export.quality); }); }
+export async function createOutputFiles(master, baseName) { const slices = sliceTriptych(master); return Promise.all(slices.map(async slice => { const blob = await canvasToBlob(slice.canvas); const filename = `${baseName}_${slice.label}_1152x1440.jpg`; return { ...slice, blob, file: new File([blob], filename, { type: APP_CONFIG.export.mimeType }) }; })); }
+export async function tryShare(items, title = 'IG 三聯圖片') { const files = items.map(item => item.file); if (!navigator.canShare || !navigator.canShare({ files })) return false; await navigator.share({ files, title }); return true; }
+export function openBlob(blob) { const url = URL.createObjectURL(blob); const opened = window.open(url, '_blank', 'noopener'); if (!opened) { const anchor = document.createElement('a'); anchor.href = url; anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.click(); } window.setTimeout(() => URL.revokeObjectURL(url), 60_000); }

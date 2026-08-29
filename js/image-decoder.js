@@ -1,0 +1,4 @@
+import { convertHeicToJpeg } from './heic.js';
+function looksLikeHeic(file) { const name = (file.name || '').toLowerCase(); const type = (file.type || '').toLowerCase(); return name.endsWith('.heic') || name.endsWith('.heif') || type.includes('heic') || type.includes('heif'); }
+function decodeBlob(blob) { return new Promise((resolve, reject) => { const url = URL.createObjectURL(blob); const image = new Image(); image.decoding = 'async'; image.onload = () => { URL.revokeObjectURL(url); resolve(image); }; image.onerror = () => { URL.revokeObjectURL(url); reject(new Error('瀏覽器無法解碼這張圖片。')); }; image.src = url; }); }
+export async function decodeImageFile(file, onProgress = () => {}) { let source = file; if (looksLikeHeic(file)) { onProgress('正在轉換 HEIC…'); source = await convertHeicToJpeg(file); } return decodeBlob(source); }

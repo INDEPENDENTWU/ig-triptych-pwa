@@ -1,131 +1,53 @@
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="IG三联">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>IG 三联工具</title>
-<style>
-:root{--bg:#f5f2ee;--card:#fff;--text:#18212b;--muted:#667085;--line:#d9dfe7;--dark:#111827;--ok:#067647;--warn:#b54708;--bad:#b42318}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif}body{min-height:100vh}
-.app{max-width:760px;margin:auto;padding:calc(12px + env(safe-area-inset-top)) 12px calc(28px + env(safe-area-inset-bottom))}
-.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.top h1{font-size:21px;margin:0 0 4px}.top p{font-size:12.5px;color:var(--muted);margin:0}.badge{font-size:11px;background:#fff;border:1px solid var(--line);padding:5px 8px;border-radius:999px;white-space:nowrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0;box-shadow:0 6px 18px rgba(17,24,39,.04)}
-.pick{position:relative}.pick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.btn{border:0;border-radius:14px;padding:13px 14px;font-size:15px;font-weight:750;width:100%;background:var(--dark);color:#fff;cursor:pointer;text-align:center}.btn.secondary{background:#eef1f4;color:#111827}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.small{font-size:13px;padding:10px}
-.status{font-size:12.5px;color:var(--muted);margin-top:9px;white-space:pre-line}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.status.bad{color:var(--bad)}
-.preview{background:#edf1f4;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:120px;display:flex;align-items:center;justify-content:center}.preview canvas{display:block;width:100%;height:auto}.empty{padding:34px 10px;color:var(--muted);font-size:13px;text-align:center}
-.controls{display:grid;gap:10px;margin-top:12px}.field label{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:700;margin-bottom:5px}.field select,.field input[type=range]{width:100%}.field select{border:1px solid var(--line);border-radius:11px;background:#fff;padding:10px;font-size:13px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.actions.one{grid-template-columns:1fr}
-.result-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.result-head b{font-size:14px}.result-head span{font-size:11.5px;color:var(--muted)}
-.results{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tile{border:1px solid var(--line);border-radius:12px;padding:6px;background:#fafbfc}.tile canvas{width:100%;display:block;border-radius:8px;background:#fff}.tile .name{text-align:center;font-size:11px;font-weight:700;margin:5px 0 2px}.tile .hint{text-align:center;font-size:10px;color:var(--muted)}
-.help{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}.sep{height:1px;background:var(--line);margin:12px 0}.row{display:flex;gap:8px}.row>*{flex:1}
-.install{display:none;margin-top:8px}.install.show{display:block}
-@media(max-width:480px){.results{gap:5px}.tile{padding:4px}.tile .name{font-size:10px}.actions{grid-template-columns:1fr}.top p{max-width:260px}}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="IG三聯">
+  <meta name="description" content="在裝置本機把照片整理成 IG 三聯貼文，不上傳圖片。">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <title>IG 三聯工具</title>
 </head>
 <body>
-<div class="app">
-  <div class="top">
-    <div><h1>IG 三联工具</h1><p>任意照片 → 3240×1440 → Business Suite 三张 1152×1440</p></div>
-    <div class="badge">本地处理</div>
-  </div>
-
-  <section class="card">
-    <div class="pick">
-      <button class="btn" type="button">从相册选择照片</button>
-      <input id="file" type="file" accept="image/*,.heic,.heif">
-    </div>
-    <div id="status" class="status">图片只在你的设备上处理，不会上传。</div>
-    <button id="installBtn" class="btn secondary install" type="button">添加到主屏幕</button>
-  </section>
-
-  <section class="card">
-    <div id="preview" class="preview"><div class="empty">选择照片后自动生成预览</div></div>
-    <div class="controls">
-      <div class="field">
-        <label><span>适配方式</span><span id="modeText">完整保留</span></label>
-        <select id="mode">
-          <option value="edge" selected>推荐：完整保留 + 模糊背景补齐</option>
-          <option value="cover">铺满画面（可能轻微裁切）</option>
-        </select>
+  <main class="app" id="app">
+    <header class="top">
+      <div><h1>IG 三聯工具</h1><p>任意照片 → 3240×1440 → Business Suite 三張 1152×1440</p></div>
+      <span class="badge">本機處理</span>
+    </header>
+    <section class="card" aria-labelledby="source-title">
+      <h2 id="source-title" class="sr-only">選擇圖片</h2>
+      <label class="pick"><span class="btn" aria-hidden="true">從相簿選擇照片</span><input id="file" type="file" accept="image/*,.heic,.heif" aria-label="從相簿選擇照片"></label>
+      <p id="status" class="status" role="status" aria-live="polite">圖片只在你的裝置上處理，不會上傳。</p>
+      <button id="installBtn" class="btn secondary install" type="button">加入主畫面</button>
+    </section>
+    <section class="card" aria-labelledby="editor-title">
+      <h2 id="editor-title" class="sr-only">圖片編輯</h2>
+      <div id="preview" class="preview"><div class="empty">選擇照片後自動產生預覽</div></div>
+      <div class="controls">
+        <div class="field"><label for="mode"><span>適配方式</span><output id="modeText">完整保留</output></label><select id="mode"><option value="edge" selected>推薦：完整保留 + 模糊背景補齊</option><option value="cover">鋪滿畫面（可能裁切）</option></select></div>
+        <div class="field"><label for="x"><span>水平位置</span><output id="xv">0</output></label><input id="x" type="range" min="-100" max="100" value="0"></div>
+        <div class="field"><label for="y"><span>垂直位置</span><output id="yv">0</output></label><input id="y" type="range" min="-100" max="100" value="0"></div>
+        <div class="field"><label for="zoom"><span>主體縮放</span><output id="zv">100%</output></label><input id="zoom" type="range" min="70" max="150" value="100"></div>
+        <div class="field"><label for="blur"><span>背景模糊</span><output id="bv">18</output></label><input id="blur" type="range" min="0" max="36" value="18"></div>
       </div>
-      <div class="field"><label><span>水平位置</span><span id="xv">0</span></label><input id="x" type="range" min="-100" max="100" value="0"></div>
-      <div class="field"><label><span>垂直位置</span><span id="yv">0</span></label><input id="y" type="range" min="-100" max="100" value="0"></div>
-      <div class="field"><label><span>主体缩放</span><span id="zv">100%</span></label><input id="zoom" type="range" min="70" max="150" value="100"></div>
-      <div class="field"><label><span>背景模糊</span><span id="bv">18</span></label><input id="blur" type="range" min="0" max="36" value="18"></div>
-    </div>
-    <div class="actions one"><button id="generate" class="btn" type="button" disabled>生成三联图</button></div>
-  </section>
-
-  <section id="resultCard" class="card" hidden>
-    <div class="result-head"><b>三张已生成</b><span>发布顺序：右 → 中 → 左</span></div>
-    <div id="results" class="results"></div>
-    <div class="actions one"><button id="shareAll" class="btn" type="button">一次分享 / 保存三张</button></div>
-    <div class="actions"><button id="saveLeft" class="btn secondary small" type="button">保存左图</button><button id="saveMid" class="btn secondary small" type="button">保存中图</button></div>
-    <div class="actions one"><button id="saveRight" class="btn secondary small" type="button">保存右图</button></div>
-    <div class="help">iPhone Safari：优先点“一次分享 / 保存三张”，在系统分享面板里选择“存储 3 张图像”。如果系统不支持一次保存，使用下面三个单张保存按钮。</div>
-  </section>
-
-  <section class="card">
-    <div class="help"><b>固定机制</b><br>主图：3240×1440<br>内部母版：3312×1440（左右各 36px bleed）<br>输出：3 张 1152×1440<br>Business Suite 发布：03 右图 → 02 中图 → 01 左图</div>
-  </section>
-</div>
-<script>
-(()=>{
-  const TW=3240,TH=1440,MW=3312,OW=1152,B=36;
-  const $=id=>document.getElementById(id);
-  const file=$('file'),status=$('status'),preview=$('preview'),mode=$('mode'),x=$('x'),y=$('y'),zoom=$('zoom'),blur=$('blur'),generate=$('generate'),resultCard=$('resultCard'),results=$('results');
-  let src=null,master=null,outputs=[],deferredPrompt=null,baseName='IG三联';
-  const mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
-  const dims=img=>({w:img.naturalWidth||img.width,h:img.naturalHeight||img.height});
-  const setStatus=(t,c='')=>{status.textContent=t;status.className='status'+(c?' '+c:'')};
-  function labels(){ $('xv').textContent=x.value;$('yv').textContent=y.value;$('zv').textContent=zoom.value+'%';$('bv').textContent=blur.value;$('modeText').textContent=mode.value==='cover'?'铺满裁切':'完整保留'; }
-  async function decode(f){
-    const n=(f.name||'').toLowerCase(),t=(f.type||'').toLowerCase();
-    if(n.endsWith('.heic')||n.endsWith('.heif')||t.includes('heic')||t.includes('heif')){
-      if(typeof heic2any==='function'){
-        setStatus('正在转换 HEIC…');
-        const blob=await heic2any({blob:f,toType:'image/jpeg',quality:.95});
-        f=Array.isArray(blob)?blob[0]:blob;
-      } else throw new Error('HEIC 转换组件未加载，请确认网络连接。');
-    }
-    const url=URL.createObjectURL(f);
-    try{
-      const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('浏览器无法解码这张图片'));i.src=url});
-      return img;
-    } finally { setTimeout(()=>URL.revokeObjectURL(url),3000); }
-  }
-  function drawCover(ctx,img,w,h,bl){const d=dims(img),s=Math.max(w/d.w,h/d.h),dw=d.w*s,dh=d.h*s,dx=(w-dw)/2,dy=(h-dh)/2;ctx.save();if(bl)ctx.filter=`blur(${bl}px)`;ctx.drawImage(img,dx,dy,dw,dh);ctx.restore()}
-  function build(){if(!src)return;labels();master=mk(TW,TH);const c=master.getContext('2d'),d=dims(src);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';
-    if(mode.value==='edge'){drawCover(c,src,TW,TH,+blur.value);c.save();c.globalAlpha=.08;c.fillStyle='#fff';c.fillRect(0,0,TW,TH);c.restore()}
-    else{c.fillStyle='#fff';c.fillRect(0,0,TW,TH)}
-    let s=(mode.value==='cover'?Math.max(TW/d.w,TH/d.h):Math.min(TW/d.w,TH/d.h))*(+zoom.value/100),dw=d.w*s,dh=d.h*s;
-    let dx=(TW-dw)/2+(+x.value/100)*(Math.abs(TW-dw)/2),dy=(TH-dh)/2+(+y.value/100)*(Math.abs(TH-dh)/2);
-    c.drawImage(src,dx,dy,dw,dh);
-    const pv=mk(TW,TH),p=pv.getContext('2d');p.drawImage(master,0,0);p.save();p.strokeStyle='rgba(255,255,255,.9)';p.lineWidth=8;p.beginPath();p.moveTo(1080,0);p.lineTo(1080,TH);p.moveTo(2160,0);p.lineTo(2160,TH);p.stroke();p.strokeStyle='rgba(0,0,0,.35)';p.lineWidth=2;p.beginPath();p.moveTo(1080,0);p.lineTo(1080,TH);p.moveTo(2160,0);p.lineTo(2160,TH);p.stroke();p.restore();preview.innerHTML='';preview.appendChild(pv);generate.disabled=false;
-  }
-  function bleedMaster(){const m=mk(MW,TH),c=m.getContext('2d');c.drawImage(master,0,0,TW,TH,B,0,TW,TH);c.save();c.translate(B,0);c.scale(-1,1);c.drawImage(master,0,0,B,TH,0,0,B,TH);c.restore();c.save();c.translate(MW,0);c.scale(-1,1);c.drawImage(master,TW-B,0,B,TH,0,0,B,TH);c.restore();return m}
-  const toBlob=c=>new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error('图片导出失败')),'image/jpeg',.95));
-  async function generateAll(){const bm=bleedMaster();const specs=[['01_LEFT_左图',0],['02_MIDDLE_中图',1080],['03_RIGHT_右图',2160]];outputs=[];results.innerHTML='';for(const [name,sx] of specs){const c=mk(OW,TH),cc=c.getContext('2d');cc.drawImage(bm,sx,0,OW,TH,0,0,OW,TH);const blob=await toBlob(c);const f=new File([blob],`${baseName}_${name}_1152x1440.jpg`,{type:'image/jpeg'});outputs.push({name,canvas:c,blob,file:f});const tile=document.createElement('div');tile.className='tile';tile.appendChild(c);const nm=document.createElement('div');nm.className='name';nm.textContent=name;tile.appendChild(nm);const h=document.createElement('div');h.className='hint';h.textContent='1152×1440';tile.appendChild(h);results.appendChild(tile)}resultCard.hidden=false;resultCard.scrollIntoView({behavior:'smooth',block:'start'});setStatus('已生成三张图片。','ok')}
-  async function shareFiles(items){const files=items.map(o=>o.file);if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,title:'IG 三联图片'});return true}return false}
-  function openBlob(blob){const url=URL.createObjectURL(blob);const w=window.open(url,'_blank');if(!w){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.click()}setTimeout(()=>URL.revokeObjectURL(url),60000)}
-  async function saveOne(i){try{if(await shareFiles([outputs[i]]))return}catch(e){if(e.name==='AbortError')return}openBlob(outputs[i].blob)}
-  file.addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;baseName=(f.name||'IG三联').replace(/\.[^.]+$/,'');setStatus('正在读取照片…');resultCard.hidden=true;try{src=await decode(f);const d=dims(src);setStatus(`读取成功：${d.w} × ${d.h}px`,'ok');build()}catch(err){setStatus('读取失败：'+err.message,'bad')}});
-  [mode,x,y,zoom,blur].forEach(el=>el.addEventListener('input',()=>{labels();if(src){clearTimeout(window.__igT);window.__igT=setTimeout(build,120)}}));
-  generate.addEventListener('click',()=>generateAll().catch(e=>setStatus(e.message,'bad')));
-  $('shareAll').addEventListener('click',async()=>{try{if(await shareFiles(outputs))return}catch(e){if(e.name==='AbortError')return}setStatus('当前浏览器不支持一次分享三张，请用下方单张保存按钮。','warn')});
-  $('saveLeft').addEventListener('click',()=>saveOne(0));$('saveMid').addEventListener('click',()=>saveOne(1));$('saveRight').addEventListener('click',()=>saveOne(2));
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.add('show')});
-  $('installBtn').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.remove('show')}else alert('iPhone：点 Safari 分享按钮 → 添加到主屏幕。')});
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-  labels();
-})();
-</script>
+      <div class="actions one"><button id="generate" class="btn" type="button" disabled>產生三聯圖</button></div>
+    </section>
+    <section id="resultCard" class="card" aria-labelledby="result-title" hidden>
+      <div class="result-head"><b id="result-title">三張已產生</b><span>發布順序：右 → 中 → 左</span></div>
+      <div id="results" class="results"></div>
+      <div class="actions one"><button id="shareAll" class="btn" type="button">一次分享 / 儲存三張</button></div>
+      <div class="actions"><button id="saveLeft" class="btn secondary small" type="button">儲存左圖</button><button id="saveMid" class="btn secondary small" type="button">儲存中圖</button></div>
+      <div class="actions one"><button id="saveRight" class="btn secondary small" type="button">儲存右圖</button></div>
+      <p class="help">iPhone Safari：優先點「一次分享 / 儲存三張」，在系統分享面板選擇「儲存 3 張影像」。若系統不支援一次儲存，使用下面三個單張按鈕。</p>
+    </section>
+    <section class="card" aria-labelledby="spec-title"><div class="help"><b id="spec-title">固定機制</b><br>主圖：3240×1440<br>內部母版：3312×1440（左右各 36px bleed）<br>輸出：3 張 1152×1440<br>Business Suite 發布：03 右圖 → 02 中圖 → 01 左圖</div></section>
+  </main>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>

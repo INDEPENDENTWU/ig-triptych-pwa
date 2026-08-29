@@ -1,0 +1,8 @@
+{
+  "name": "ig-triptych-pwa",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "engines": { "node": ">=20" }
+}
